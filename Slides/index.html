@@ -11,12 +11,20 @@
 		<link rel="stylesheet" href="css/reveal.min.css">
 		<link rel="stylesheet" href="css/theme/default.css" id="theme">
 		<link rel="stylesheet" href="lib/css/zenburn.css">
+		<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 
 		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
 		<script>
 			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
 		</script>
-
+    <style>
+    [class^="icon-"], [class*=" icon-"]
+    {
+      font-family: FontAwesome !important;
+      font-style: normal !important;
+      padding-right: 10px !important;
+    }
+    </style>
 		<!--[if lt IE 9]>
 		<script src="lib/js/html5shiv.js"></script>
 		<![endif]-->
@@ -29,7 +37,12 @@
 					<h1>iOS Push Notifications</h1>
 					<h3>Zero To Engagement</h3>
 					<p>
-						<small>Created by <a href="http://adamvduke.com">Adam Duke</a> / <a href="http://twitter.com/adamvduke">@adamvduke</a></small>
+						<small>Created by Adam Duke
+						  <ul style="list-style: none;">
+						    <li><i class="icon-twitter"></i><a href="http://twitter.com/adamvduke">@adamvduke</a></li>
+						    <li><i class="icon-github-alt"></i><a href="https://github.com/adamvduke">@adamvduke</a></li>
+						    <li><i class="icon-globe"></i><a href="http://adamvduke.com">http://adamvduke.com</a></li>
+						</small>
 					</p>
 				</section>
 				
@@ -37,9 +50,9 @@
 					<h2>About Me</h2>
 					<p>Adam Duke</p>
 					<p>
-					  <small>Engineer/Co-Founder at <a href=http://symmetricinfinity.com>Symmetric Infinity</a></small>
+					  Engineer/Co-Founder at Symmetric Infinity
 					  <br>
-					  <small>iOS apps/Rails APIs</small>
+					  <a href=http://symmetricinfinity.com>http://symmetricinfinity.com</a>
 					</p>
 					<p class="fragment">Working with iOS for about 4 years</p>
 					<p class="fragment">Working with Ruby/Rails for about 3 years</p>
@@ -122,7 +135,7 @@
                 <li class="fragment">These are tied to a specific bundle id</li>
                 <li class="fragment">e.g. com.apple.itunes.iphone</li>
                 <li class="fragment">Configure/Download from developer.apple.com</li>
-                <li class="fragment"><a href="https://zeropush.com/documentation/generating_certificates" target="_blank">Tutorial</a></li>
+                <li class="fragment"><a href="https://zeropush.com/documentation/generating_certificates" target="_blank">https://zeropush.com/documentation/generating_certificates</a></li>
               </ul>
               <li class="fragment">A device token</li>
               <ul>
@@ -223,7 +236,8 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 
 				<section>
 				  <h1>Demo</h1>
-				  <p>The code is available on <a href="https://github.com/adamvduke/ZeroToEngagement/Demo" target="_blank">github</a></p>
+				  <p>The code is available on github</p>
+				  <a href="https://github.com/adamvduke/ZeroToEngagement/tree/master/Demo" target="_blank">https://github.com/adamvduke/ZeroToEngagement</a>
 				</section>
 
 				<section>
@@ -267,17 +281,17 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 				<section>
 					<h2>Third-party Providers</h2>
 					<ol>
-					  <li class="fragment"><a href="https://zeropush.com/">ZeroPush</a> - A developer focused push notification provider</li>
+					  <li class="fragment"><a href="https://zeropush.com/">ZeroPush.com</a> - A developer focused push notification provider</li>
 					  <ul>
 					    <li class="fragment">Full disclosure, my business partner and I wrote this</li>
 					    <li class="fragment">We're looking for beta testers!!</li>
 					  </ul>
-					  <li class="fragment"><a href="http://urbanairship.com/">Urban Airship</a> - A marketing focused push notification provider</li>
-					  <li class="fragment"><a href="https://parse.com/">Parse</a> - Cloud database and push notification provider</li>
+					  <li class="fragment"><a href="http://urbanairship.com/">UrbanAirship.com</a> - A marketing focused push notification provider</li>
+					  <li class="fragment"><a href="https://parse.com/">Parse.com</a> - Cloud database and push notification provider</li>
 					    <ul>
 					      <li class="fragment">Owned by Facebook, possibly subject to NSA Prism data collection</li>
 					    </ul>
-					  <li class="fragment"><a href="http://push.io/">Push IO</a></li>  					
+					  <li class="fragment"><a href="http://push.io/">Push.IO</a></li>
 					</ol>
 				</section>
 
