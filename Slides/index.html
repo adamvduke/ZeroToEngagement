@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Push Notifications - Zero To Engagement</title>
+		<meta name="description" content="A brief introduction to iOS Push Notifications">
+		<meta name="author" content="Adam Duke">
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+	<body>
+
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h1>iOS Push Notifications</h1>
+					<h3>Zero To Engagement</h3>
+					<p>
+						<small>Created by <a href="http://adamvduke.com">Adam Duke</a> / <a href="http://twitter.com/adamvduke">@adamvduke</a></small>
+					</p>
+				</section>
+				
+				<section>
+					<h2>About Me</h2>
+					<p>Adam Duke</p>
+					<p>
+					  <small>Engineer/Co-Founder at <a href=http://symmetricinfinity.com>Symmetric Infinity</a></small>
+					  <br>
+					  <small>iOS apps/Rails APIs</small>
+					</p>
+					<p class="fragment">Working with iOS for about 4 years</p>
+					<p class="fragment">Working with Ruby/Rails for about 3 years</p>
+					<p class="fragment"><a href="https://github.com/adamvduke" target="_blank">I ❤ open source</a></p>
+				</section>
+
+        <section>
+          <h2>Agenda</h2>
+          <ul>
+          <li>What is a push notification?</li>
+          <li>How do they work?</li>
+          <li>Communicating with APNS</li>
+          <li>Prerequisites for communicating</li>
+          <li>Code Walkthrough</li>
+          <li>Pitfalls</li>
+          <li>Feedback</li>
+          <li>Upcoming Changes/Features</li>
+          <li>Third-party Providers</li>
+          </ul>
+        </section>
+
+				<section>
+				  <section>
+					  <h2>What is a push notification?</h2>
+					  <p>Most of the time they look something like...</p>
+  					<p class="fragment">
+  						<img src="/images/push_screenshot.png"/>
+  					</p>
+  					<aside class="notes">
+  						Hopefully someone laughs...
+  					</aside>
+					</section>
+				</section>
+        
+        <section>
+          <section>
+            <h2>How do they work?</h2>
+            <ol>
+              <li class="fragment">Apple maintains a persistent connection to each device</li>
+              <li class="fragment">Something happens that you want to tell a user about</li>
+              <li class="fragment">Package up some data in Apple's proprietary protocol</li>
+              <li class="fragment">Send the data to Apple</li>
+              <li class="fragment">Apple forwards the information to your user's device</li>
+            </ol>
+          </section>
+        </section>
+        
+        <section>
+				  <section>
+					  <h2>TL;DR</h2>
+  					<p>
+  						<img src="/images/remote_notif_simple.jpg"/>
+  					</p>
+  					<aside class="notes">
+  						Hopefully someone laughs...
+  					</aside>
+					</section>
+				</section>
+
+        <section>
+				  <section>
+					  <h2>Proprietary protocol?</h2>
+					  <p class="fragment">Uses a plain TCP socket secured by SSL</p>
+					  <p class="fragment">A single notification looks like...</p>
+					  <p class="fragment">
+  						<img src="/images/aps_binary_provider_2.jpg"/>
+  					</p>
+  					<p class="fragment">Ewww</p>
+  					<p class="fragment">Ain't nobody got time for that</p>
+  					<p class="fragment">Most platforms have a library for this</p>
+					</section>
+				</section>
+
+        <section>
+				  <section>
+					  <h2>Prerequisites to send a notification</h2>
+					  <ol>
+              <li class="fragment">Certificates to secure your socket</li>
+              <ul>
+                <li class="fragment">These are tied to a specific bundle id</li>
+                <li class="fragment">e.g. com.apple.itunes.iphone</li>
+                <li class="fragment">Configure/Download from developer.apple.com</li>
+                <li class="fragment"><a href="https://zeropush.com/documentation/generating_certificates" target="_blank">Tutorial</a></li>
+              </ul>
+              <li class="fragment">A device token</li>
+              <ul>
+                <li class="fragment">Who do you want to send a notification to?</li>
+                <li class="fragment">We'll talk about how to get this in a minute.</li>
+              </ul>
+              <li class="fragment">A JSON hash of the data you'd like to send</li>
+              <ul>
+                <li class="fragment">The "alert" key will be the text shown</li>
+                <li class="fragment">The "badge" key will set the badge on the icon</li>
+                <li class="fragment">The "sound" key identifies the sound to play</li>
+              </ul>
+            </ol>
+					</section>
+				</section>
+
+        <section>
+          <h2>What do they look like?</h2>
+          <h3>Certificates</h3>
+          <p>This is just a public/private key pair</p>  
+        </section>
+        
+        <section>
+          <h2>What do they look like?</h2>
+          <h3>Device Token</h3>          
+          <pre><code data-trim contenteditable>
+            399aac70e191943153a5c9c291fd75fda369c3c6d5c7c3eb77a8c2ae601bd6c4
+            </code></pre>
+        </section>
+
+        <section>
+          <h2>What do they look like?</h2>
+          <h3>Notification Payload</h3>
+          <pre class="fragment"><code data-trim contenteditable>
+{
+  "aps" : {
+    "alert" : "You've got mail!",
+    "badge" : 9,
+    "sound" : "special_ed_mail.aiff"
+  }
+}
+          </code></pre>
+          <pre class="fragment"><code data-trim contenteditable>
+{
+  "aps" : {
+    "alert" : "Adam D. sent you a message!",
+    "badge" : 9,
+    "sound" : "bingbong.aiff"
+  },
+  "info" : {
+    "type" : "chat",
+    "user_id" : "123456"
+  }
+}
+          </code></pre>  
+        </section>
+        
+        <section>
+					<h2>How do I get a device token?</h2>
+					<p>Write some code!</p>
+					<pre class="fragment"><code data-trim contenteditable>
+- (void)applicationDidBecomeActive:(UIApplication *)application
+{
+    /* Every time the app becomes active,
+       attempt to register */
+    [application registerForRemoteNotificationTypes:
+    (UIRemoteNotificationTypeBadge |
+     UIRemoteNotificationTypeSound |
+     UIRemoteNotificationTypeAlert)];
+}
+          </code></pre>
+          </section>
+          
+          <section>
+            <h2>How do I get a device token?</h2>
+            <p>Remember this is Objective-C, so...</p>
+            <p class="fragment">Write a little more code!</p>
+            <pre class="fragment"><code data-trim contenteditable>
+- (void)application:(UIApplication *)application
+didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+    /* Turn the data into a string.
+       Someone will tell me I can do this with a regex */
+    NSString *token = [deviceToken description];
+    token = [token stringByReplacingOccurrencesOfString:@"<"
+    withString:@""];
+    token = [token stringByReplacingOccurrencesOfString:@">"
+    withString:@""];
+    token = [token stringByReplacingOccurrencesOfString:@" "
+    withString:@""];
+    
+    /* TODO: Save the string along with a
+     user id to the server so we can
+     know which devices belong to whom. */
+}
+          </code></pre>
+				</section>
+
+				<section>
+				  <h1>Demo</h1>
+				  <p>The code is available on <a href="https://github.com/adamvduke/ZeroToEngagement/Demo" target="_blank">github</a></p>
+				</section>
+
+				<section>
+					<h2>Pitfalls</h2>
+					<ul>
+					  <li class="fragment">Apple expects you to maintain a persistent connection to the APN service</li>
+					    <ul>
+    					  <li class="fragment">Rapid connect/disconnect behavior may be seen as a DOS attack and get you black listed</li>
+    					</ul>
+  					<li class="fragment">The communication over the connection is asynchronous</li>
+  					  <ul>
+      					<li class="fragment">If there is a problem with a notification Apple will reply, and close the connection</li>
+      					<li class="fragment">Any notifications sent between the error and the reply must be sent again</li>
+  					  </ul>
+  					<li class="fragment">Connections that are idle for too long are closed with no warning</li>
+					</ul>
+				</section>
+        
+        <section>
+          <h2>Feedback Service</h2>
+          <ol>
+            <li class="fragment">User deletes your app</li>
+            <li class="fragment">You attempt to notify them</li>
+            <li class="fragment">Apple realizes the app is no longer on their device</li>
+            <li class="fragment">Apple marks that device as inactive</li>
+            <li class="fragment">Query the feedback service</li>
+            <li class="fragment">You mark the device inactive</li>
+            <li class="fragment">Don't send notifications to inactive devices</li>
+            <li class="fragment">If the device registers for notifications again, mark the device as active</li>
+            <li class="fragment">Resume sending notifications</li>
+        </section>
+        
+        <section>
+          <h2>Upcoming Changes/Features</h2>
+            <ul>
+              <li class="fragment">Silent Notifications</li>
+              <li class="fragment">Notifications for Websites</li>
+            </ul>
+        </section>
+
+				<section>
+					<h2>Third-party Providers</h2>
+					<ol>
+					  <li class="fragment"><a href="https://zeropush.com/">ZeroPush</a> - A developer focused push notification provider</li>
+					  <ul>
+					    <li class="fragment">Full disclosure, my business partner and I wrote this</li>
+					    <li class="fragment">We're looking for beta testers!!</li>
+					  </ul>
+					  <li class="fragment"><a href="http://urbanairship.com/">Urban Airship</a> - A marketing focused push notification provider</li>
+					  <li class="fragment"><a href="https://parse.com/">Parse</a> - Cloud database and push notification provider</li>
+					    <ul>
+					      <li class="fragment">Owned by Facebook, possibly subject to NSA Prism data collection</li>
+					    </ul>
+					  <li class="fragment"><a href="http://push.io/">Push IO</a></li>  					
+					</ol>
+				</section>
+
+				<section>
+					<h1>Questions?</h1>
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+					// { src: 'plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; } }
+					// { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>

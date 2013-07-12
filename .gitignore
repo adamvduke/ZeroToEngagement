@@ -1,0 +1,5 @@
+*.p12
+*.pem
+Demo/ZeroToEngagementiOS/ZeroToEngagementiOS.xcodeproj/project.xcworkspace/*
+Demo/ZeroToEngagementiOS/ZeroToEngagementiOS.xcodeproj/xcuserdata/*
+Slides/node_modules/*
