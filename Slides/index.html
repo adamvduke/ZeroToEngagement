@@ -9,7 +9,7 @@
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 		<link rel="stylesheet" href="css/reveal.min.css">
-		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+		<link rel="stylesheet" href="css/theme/beige.css" id="theme">
 		<link rel="stylesheet" href="lib/css/zenburn.css">
 		<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 
@@ -86,7 +86,7 @@
   					</aside>
 					</section>
 				</section>
-        
+
         <section>
           <section>
             <h2>How do they work?</h2>
@@ -99,7 +99,7 @@
             </ol>
           </section>
         </section>
-        
+
         <section>
 				  <section>
 					  <h2>TL;DR</h2>
@@ -144,9 +144,10 @@
               </ul>
               <li class="fragment">A JSON hash of the data you'd like to send</li>
               <ul>
-                <li class="fragment">The "alert" key will be the text shown</li>
-                <li class="fragment">The "badge" key will set the badge on the icon</li>
-                <li class="fragment">The "sound" key identifies the sound to play</li>
+                <li class="fragment">The 'alert' key will be the text shown</li>
+                <li class="fragment">The 'badge' key will set the badge on the icon</li>
+                <li class="fragment">The 'sound' key identifies the sound to play</li>
+                <li class="fragment">There are more complicated options...</li>
               </ul>
             </ol>
 					</section>
@@ -157,11 +158,11 @@
           <h3>Certificates</h3>
           <p>This is just a public/private key pair</p>  
         </section>
-        
+
         <section>
           <h2>What do they look like?</h2>
-          <h3>Device Token</h3>          
-          <pre><code data-trim contenteditable>
+          <h3>Device Token</h3>
+          <pre><code data-trim contenteditable style='font-size: 24px'>
             399aac70e191943153a5c9c291fd75fda369c3c6d5c7c3eb77a8c2ae601bd6c4
             </code></pre>
         </section>
@@ -169,7 +170,7 @@
         <section>
           <h2>What do they look like?</h2>
           <h3>Notification Payload</h3>
-          <pre class="fragment"><code data-trim contenteditable>
+          <pre class="fragment"><code data-trim contenteditable  style='font-size: 24px'>
 {
   "aps" : {
     "alert" : "You've got mail!",
@@ -178,7 +179,7 @@
   }
 }
           </code></pre>
-          <pre class="fragment"><code data-trim contenteditable>
+          <pre class="fragment"><code data-trim contenteditable  style='font-size: 24px'>
 {
   "aps" : {
     "alert" : "Adam D. sent you a message!",
@@ -192,11 +193,11 @@
 }
           </code></pre>  
         </section>
-        
+
         <section>
 					<h2>How do I get a device token?</h2>
 					<p>Write some code!</p>
-					<pre class="fragment"><code data-trim contenteditable>
+					<pre class="fragment"><code data-trim contenteditable style='font-size: 24px'>
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
     /* Every time the app becomes active,
@@ -208,12 +209,12 @@
 }
           </code></pre>
           </section>
-          
+
           <section>
             <h2>How do I get a device token?</h2>
             <p>Remember this is Objective-C, so...</p>
             <p class="fragment">Write a little more code!</p>
-            <pre class="fragment"><code data-trim contenteditable>
+            <pre class="fragment"><code data-trim contenteditable style='font-size: 24px'>
 - (void)application:(UIApplication *)application
 didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
@@ -226,7 +227,7 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
     withString:@""];
     token = [token stringByReplacingOccurrencesOfString:@" "
     withString:@""];
-    
+
     /* TODO: Save the string along with a
      user id to the server so we can
      know which devices belong to whom. */
@@ -244,18 +245,18 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 					<h2>Pitfalls</h2>
 					<ul>
 					  <li class="fragment">Apple expects you to maintain a persistent connection to the APN service</li>
-					    <ul>
-    					  <li class="fragment">Rapid connect/disconnect behavior may be seen as a DOS attack and get you black listed</li>
-    					</ul>
+            <ul>
+              <li class="fragment">Rapid connect/disconnect behavior may be seen as a DOS attack and get you black listed</li>
+            </ul>
   					<li class="fragment">The communication over the connection is asynchronous</li>
-  					  <ul>
-      					<li class="fragment">If there is a problem with a notification Apple will reply, and close the connection</li>
-      					<li class="fragment">Any notifications sent between the error and the reply must be sent again</li>
-  					  </ul>
+            <ul>
+              <li class="fragment">If there is a problem with a notification Apple will reply, and close the connection</li>
+              <li class="fragment">Any notifications sent between the error and the reply must be sent again</li>
+            </ul>
   					<li class="fragment">Connections that are idle for too long are closed with no warning</li>
 					</ul>
 				</section>
-        
+
         <section>
           <h2>Feedback Service</h2>
           <ol>
@@ -268,14 +269,36 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
             <li class="fragment">Don't send notifications to inactive devices</li>
             <li class="fragment">If the device registers for notifications again, mark the device as active</li>
             <li class="fragment">Resume sending notifications</li>
+          </ol>
         </section>
-        
+
         <section>
-          <h2>Upcoming Changes/Features</h2>
+          <h2>New Push Notification Features</h2>
+          <ul>
+            <li class="fragment">Silent Notifications</li>
             <ul>
-              <li class="fragment">Silent Notifications</li>
-              <li class="fragment">Notifications for Websites</li>
+              <li class="fragment">Send a notification with data and no user facing content</li>
+              <li class="fragment">Use background fetch to update local copies of data</li>
+              <li class="fragment">Schedule a local notification to alert the user of new content</li>
+              <li class="fragment">User launches the app and doesn't have to wait for data to download</li>
             </ul>
+          </ul>
+        </section>
+        <section>
+          <h2>New Push Notification Features</h2>
+          <ul>
+            <li class="fragment">Notifications for Websites (Safari 7+)</li>
+            <ul>
+              <li class="fragment">Run some javascript on your site</li>
+              <li class="fragment">Safari makes a POST request to your server</li>
+              <li class="fragment">You return a zip file called a PushPackage</li>
+              <li class="fragment">Push package contains icons and some metadata about the site</li>
+              <li class="fragment">Safari uses the icons and metadata to ask the user for permission</li>
+              <li class="fragment">User allows notifications</li>
+              <li class="fragment">Safari makes another POST request to your server with a device token</li>
+              <li class="fragment">Use that device token in the same way as device tokens for other devices</li>
+            </ul>
+          </ul>
         </section>
 
 				<section>
@@ -283,15 +306,17 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 					<ol>
 					  <li class="fragment"><a href="https://zeropush.com/">ZeroPush.com</a> - A developer focused push notification provider</li>
 					  <ul>
-					    <li class="fragment">Full disclosure, my business partner and I wrote this</li>
-					    <li class="fragment">We're looking for beta testers!!</li>
+					    <li class="fragment">Full disclosure, my friend and I write/maintain this</li>
 					  </ul>
 					  <li class="fragment"><a href="http://urbanairship.com/">UrbanAirship.com</a> - A marketing focused push notification provider</li>
 					  <li class="fragment"><a href="https://parse.com/">Parse.com</a> - Cloud database and push notification provider</li>
-					    <ul>
-					      <li class="fragment">Owned by Facebook, possibly subject to NSA Prism data collection</li>
-					    </ul>
+            <ul>
+              <li class="fragment">Owned by Facebook, possibly subject to NSA Prism data collection</li>
+            </ul>
 					  <li class="fragment"><a href="http://push.io/">Push.IO</a></li>
+            <ul>
+              <li class="fragment">Being aquired by Oracle</li>
+            </ul>
 					</ol>
 				</section>
 
